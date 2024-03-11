@@ -1,0 +1,179 @@
+﻿<Window x:Class="Course_work_snake.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Course_work_snake"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=local:AppVM}"
+        Title="Змейка" Height="450" Width="800" MinHeight="450" MinWidth="800">
+    <Window.InputBindings>
+        <KeyBinding Key="Right" Command="{Binding MoveCommand}" CommandParameter="Right"/>
+        <KeyBinding Key="Down" Command="{Binding MoveCommand}" CommandParameter="Down"/>
+        <KeyBinding Key="Left" Command="{Binding MoveCommand}" CommandParameter="Left"/>
+        <KeyBinding Key="Up" Command="{Binding MoveCommand}" CommandParameter="Up"/>
+    </Window.InputBindings>
+    <Grid Background="#D0F0F0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1.5*"/>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Padding="5">
+            <StackPanel VerticalAlignment="Center">
+                <Button Content="Начать уровень" Command="{Binding StartCommand}"/>
+                <ComboBox Margin="0,0,0,15" ItemsSource="{Binding GameLevels}" SelectedItem="{Binding SelectedLevel}" Focusable="False"/>
+                <TextBlock Text="{Binding SelectedLevel}"/>
+
+                <TextBlock Text="Профиль(вне игры):" HorizontalAlignment="Center"/>
+                <ComboBox Margin="0,0,0,15" ItemsSource="{Binding GameProfiles}" SelectedItem="{Binding SelectedProfile}" Focusable="False">
+                    <ComboBox.Style>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="Visibility" Value="Visible"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding profilesVisibility}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding profilesVisibility}" Value="False">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.Style>
+                </ComboBox>
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.25*"/>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="0.5*"/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0">
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Text="SNAKE.TV" Margin="0,0,20,0"/>
+            </Border>
+
+            <Border Grid.Row="1">
+
+                <ItemsControl Background="AliceBlue" 
+                              ItemsSource="{Binding Grid}"
+                              VerticalAlignment="Center" 
+                              HorizontalAlignment="Center">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ItemsControl ItemsSource="{Binding}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border BorderThickness="0.5" Height="20" Width="20">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="BorderBrush" Value="LightBlue"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding}" Value="Snake">
+                                                            <Setter Property="BorderBrush" Value="Blue"/>
+                                                            <Setter Property="Background" Value="DodgerBlue"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding}" Value="SnakeHead">
+                                                            <Setter Property="BorderBrush" Value="#FF005997"/>
+                                                            <Setter Property="Background" Value="#FF00C100"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding}" Value="Food">
+                                                            <Setter Property="BorderBrush" Value="Black"/>
+                                                            <Setter Property="Background" Value="LightPink"/>
+                                                            <Setter Property="CornerRadius" Value="9"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding}" Value="SpecialFood">
+                                                            <Setter Property="BorderBrush" Value="Black"/>
+                                                            <Setter Property="Background" Value="#FFCFD37D"/>
+                                                            <Setter Property="CornerRadius" Value="9"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding}" Value="Wall">
+                                                            <Setter Property="BorderBrush" Value="Black"/>
+                                                            <Setter Property="Background" Value="Black"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel Orientation="Horizontal"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel Orientation="Vertical"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </Border>
+
+            <Border Grid.Row="1"
+                    Background="Black" 
+                    Opacity="0.8"
+                    Width="320"
+                    Height="320">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Visibility" Value="Hidden"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding GameOver}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding GameOver}" Value="False">
+                                <Setter Property="Visibility" Value="Hidden"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding IsWin}" Foreground="AliceBlue" FontSize="24"/>
+                    <TextBlock Text="{Binding Score, StringFormat='Счёт: {0}'}" Foreground="AliceBlue" FontSize="24"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Row="2">
+                <StackPanel>
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Hidden"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding GameStarted}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding GameStarted}" Value="False">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Text="{Binding Score, StringFormat='ОЧКИ: {0}'}"/>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Text="{Binding ScoreTarget, StringFormat='ЦЕЛЬ: {0}'}"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <Border Grid.Column="2" Padding="20">
+            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center">
+                <TextBlock Text="РЕКОРДЫ"/>
+                <TextBlock Text="{Binding LevelRecords[0], StringFormat='Змейка: {0}'}"/>
+                <TextBlock Text="{Binding LevelRecords[1], StringFormat='Обжорство: {0}'}"/>
+                <TextBlock Text="{Binding LevelRecords[2], StringFormat='Бегущий по краю: {0}'}"/>
+                <TextBlock Text="{Binding LevelRecords[3], StringFormat='Шоссе: {0}'}"/>
+                <TextBlock Text="{Binding LevelRecords[4], StringFormat='Ветрянка: {0}'}"/>
+
+                <TextBlock Text="СТАТИСТИКА" Margin="0,20,0,0"/>
+                <TextBlock Text="{Binding Wins, StringFormat='Победы: {0}'}"/>
+                <TextBlock Text="{Binding Loses, StringFormat='Поражения: {0}'}"/>
+                <TextBlock Text="{Binding WinCoefficient, StringFormat='Процент побед: {0}%'}"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
